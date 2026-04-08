@@ -8,8 +8,8 @@ dependencies = [
     "transformers",
     "torch",
     "accelerate",
-    "openenv-core"
+    "openenv-core>=0.2.0"
 ]
 
 [project.scripts]
-server = "server.app:app"
+server = "server.app:main"
