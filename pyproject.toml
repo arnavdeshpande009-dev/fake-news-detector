@@ -1,15 +1,16 @@
 [project]
 name = "fake-news-detector"
 version = "0.1.0"
-description = "AI + Rule-based Fake News Detection"
-authors = [
-    { name="Arnav Deshpande" }
-]
+description = "Fake News Detector"
 
 dependencies = [
     "fastapi",
     "uvicorn",
     "transformers",
     "torch",
-    "accelerate"
+    "accelerate",
+    "openenv>=0.2.0"
 ]
+
+[project.scripts]
+server = "server.app:app"
