@@ -1,7 +1,6 @@
 [project]
 name = "fake-news-detector"
 version = "0.1.0"
-description = "Fake News Detector"
 
 dependencies = [
     "fastapi",
@@ -9,7 +8,7 @@ dependencies = [
     "transformers",
     "torch",
     "accelerate",
-    "openenv>=0.2.0"
+    "openenv-core"
 ]
 
 [project.scripts]
