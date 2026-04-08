@@ -1,0 +1,15 @@
+[project]
+name = "fake-news-detector"
+version = "0.1.0"
+description = "AI + Rule-based Fake News Detection"
+authors = [
+    { name="Arnav Deshpande" }
+]
+
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "transformers",
+    "torch",
+    "accelerate"
+]
