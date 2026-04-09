@@ -1,54 +1,67 @@
-import os
-import requests
 import gradio as gr
+import requests
 
-# Your Space base URL (auto works on HF)
 BASE_URL = "http://localhost:7860"
 
 def call_api(text):
     try:
-        # call /reset
-        requests.post(f"{BASE_URL}/reset")
-
-        # call /step
         res = requests.post(
             f"{BASE_URL}/step",
-            json={"label": "fake news"}  # dummy, env decides
+            json={"label": text}
         )
-
         data = res.json()
-
         obs = data.get("observation", {})
-        return (
-            obs.get("prediction", "unknown"),
-            obs.get("confidence", 0.0),
-            obs.get("reason", "No reason")
-        )
+
+        pred = obs.get("prediction", "Unknown")
+        conf = obs.get("confidence", 0)
+        reason = obs.get("reason", "No reason")
+
+        # Styling output
+        if "fake" in pred.lower():
+            badge = "🚨 FAKE NEWS"
+            color = "red"
+        else:
+            badge = "✅ REAL NEWS"
+            color = "green"
+
+        return badge, conf, reason
 
     except Exception as e:
-        return "error", 0.0, str(e)
+        return "❌ Error", 0, str(e)
 
 
-with gr.Blocks(theme=gr.themes.Soft()) as demo:
+with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue")) as demo:
 
-    gr.Markdown("## 📰 Fake News Detector AI")
-    gr.Markdown("Enter news text and detect if it's real or fake")
+    gr.Markdown("""
+    # 📰 Fake News Detector AI
+    ### ⚡ Detect misinformation instantly using AI
+    """)
 
-    text_input = gr.Textbox(
-        lines=5,
-        placeholder="Paste news article here..."
-    )
+    with gr.Row():
+        text_input = gr.Textbox(
+            lines=6,
+            placeholder="Paste news article here...",
+            label="📝 Input News"
+        )
 
-    btn = gr.Button("🔍 Analyze")
+    analyze_btn = gr.Button("🔍 Analyze", variant="primary")
 
-    prediction = gr.Textbox(label="Prediction")
-    confidence = gr.Number(label="Confidence")
-    reason = gr.Textbox(label="Reason")
+    with gr.Row():
+        prediction = gr.Textbox(label="📢 Result")
+        confidence = gr.Slider(0, 1, label="📊 Confidence", interactive=False)
 
-    btn.click(
+    reason = gr.Textbox(label="🧠 Explanation")
+
+    analyze_btn.click(
         call_api,
         inputs=text_input,
         outputs=[prediction, confidence, reason]
     )
+
+    gr.Markdown("""
+    ---
+    💡 Tip: Try both real and fake headlines to test accuracy  
+    🚀 Built for AI Hackathon
+    """)
 
 demo.launch(server_name="0.0.0.0", server_port=7860)
