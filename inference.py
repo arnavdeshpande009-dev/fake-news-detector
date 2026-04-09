@@ -1,38 +1,24 @@
-from env import FakeNewsEnv
+import os
+from openai import OpenAI
 
-env = FakeNewsEnv()
+def predict(text):
+    client = OpenAI(
+        base_url=os.environ["API_BASE_URL"],
+        api_key=os.environ["API_KEY"]
+    )
 
-def run():
+    response = client.chat.completions.create(
+        model=os.environ["MODEL_NAME"],
+        messages=[
+            {"role": "system", "content": "Classify news as real or fake."},
+            {"role": "user", "content": text}
+        ]
+    )
 
-    print("[START] task=fake-news env=custom model=baseline")
+    output = response.choices[0].message.content
 
-    env.reset()
-    env.text = "Breaking: Aliens found via WhatsApp forward"
-
-    step = 1
-    rewards = []
-
-    try:
-        # 🔥 FIRST PASS (get prediction)
-        temp_result = env.step({"label": "fake news"})
-        prediction = temp_result["observation"]["prediction"]
-
-        # 🔥 USE MODEL OUTPUT AS ACTION
-        action = {"label": prediction}
-
-        # 🔥 FINAL STEP (correct reward)
-        result = env.step(action)
-
-        reward = round(result["reward"], 2)
-        rewards.append(f"{reward:.2f}")
-
-        print(f"[STEP] step={step} action={prediction} reward={reward:.2f} done=true error=null")
-
-        print(f"[END] success=true steps=1 score={reward:.2f} rewards={','.join(rewards)}")
-
-    except Exception as e:
-        print(f"[END] success=false steps=0 score=0.00 rewards= error={str(e)}")
-
-
-if __name__ == "__main__":
-    run()
+    return {
+        "prediction": output,
+        "confidence": 0.9,
+        "reason": output
+    }
