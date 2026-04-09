@@ -1,5 +1,6 @@
-gradio
-python-dotenv
 fastapi
 uvicorn
+gradio
 requests
+python-dotenv
+openai
